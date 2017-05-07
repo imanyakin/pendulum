@@ -11,10 +11,10 @@ class DoublePendulum:
 		#constants for pendulum	
 		
 		self.m1 = 1.0
-		self.m2 = 2.0
+		self.m2 = 1.0
 
 		self.l1 = 1.0
-		self.l2 = 2.0
+		self.l2 = 1.0
 		
 		self.g = 9.81
 		self.debug = debug
@@ -108,6 +108,6 @@ if __name__ == "__main__":
 
 	duration = 100.0
 	slow_factor = 1.0
-	theta_trace =  rk(x0=[-1.0,2.0,5.0,15.0],t0= 0.0,t1=duration,h=1e-2,f=pendulum.ode)
+	theta_trace =  rk(x0=[1.0,1.0,0.0,0.0],t0= 0.0,t1=duration,h=1e-2,f=pendulum.ode)
 	xy_trace = pendulum.to_xy_trace(theta_trace)
 	pendulum.animate(xy_trace,slow_factor*duration)
