@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
-from rk import *
+#from rk import *
 import numpy as np
-from animation import xy_animate as draw
+#from graphics import 
+from imtools.graphics import xy_animate, plot_timeseries
+#.xy_animate as xy_animate, graphics.plot_timeseries as plot_timeseries
+from imtools.rk import rk
 
 #integration functions
 class DoublePendulum:
@@ -61,7 +64,7 @@ class DoublePendulum:
 		max_radius = self.l1+self.l2
 		xlims = (-1.2*max_radius, 1.2*max_radius)
 		ylims = xlims
-		draw(traces, xlims, ylims,duration)
+		xy_animate(traces, xlims, ylims,duration)
 
 	def ode(self,theta,t):
 
@@ -102,12 +105,45 @@ class DoublePendulum:
 			# print "OUTPUT: {0}".format(outp)
 		return outp
 
+def simulation(x0=[1.0,1.0,0.0,0.0], duration=100.0,h=1e-2):
+
+	#initialize pendulum
+	pendulum = DoublePendulum(debug=1)
+	#run integration
+	theta_trace =  rk(x0=x0,t0= 0.0,t1=duration,h=h,f=pendulum.ode)
+	#extract time trace from theta_trace
+	time_trace = [t[1] for t in theta_trace]
+	#convert theta_1,theta_2 to x1,y1,x2,y2
+	xy_trace = pendulum.to_xy_trace(theta_trace)
+	return xy_trace, time_trace, pendulum
+
+
+def animated_simulation(x0=[1.0,1.0,0.0,0.0], duration=100.0,h=1e-2, slow_factor=1.0):
+	#####
+	# slow_factor: how much to slow animation by
+	#	default: 1.0 - real time
+
+	#run simulation
+	xy_trace, time_trace, pendulum = simulation(x0,duration, h)
+	# animate
+	pendulum.animate(xy_trace,slow_factor*duration)
+	#return the traces
+	return
+
+def plotted_simulation(x0=[1.0,1.0,0.0,0.0], duration=100.0,h=1e-2):
+	#run simulation
+	xy_trace, time, _ = simulation(x0,duration, h)
+	#extract lists: [(xs,ys)] into [x1s,y1s,x2s,y2s,...]
+	series_data = [series for xy in xy_trace for series in xy]
+	# plot time series
+	plot_timeseries(
+		series_data,
+		time,
+		xlims=[min(time), 1.2*max(time)], 
+		ylims=[1.2*min([min(ys) for ys in series_data]), 1.2*max([max(ys) for ys in series_data])]
+	)
+
 if __name__ == "__main__":
 
-	pendulum = DoublePendulum(debug=1)
-
-	duration = 100.0
-	slow_factor = 1.0
-	theta_trace =  rk(x0=[1.0,1.0,0.0,0.0],t0= 0.0,t1=duration,h=1e-2,f=pendulum.ode)
-	xy_trace = pendulum.to_xy_trace(theta_trace)
-	pendulum.animate(xy_trace,slow_factor*duration)
+	# animated_simulation()
+	plotted_simulation()
