@@ -137,13 +137,13 @@ def plotted_simulation(x0=[1.0,1.0,0.0,0.0], duration=100.0,h=1e-2):
 	series_data = [series for xy in xy_trace for series in xy]
 	# plot time series
 	plot_timeseries(
-		series_data,
 		time,
+		series_data,
 		xlims=[min(time), 1.2*max(time)], 
 		ylims=[1.2*min([min(ys) for ys in series_data]), 1.2*max([max(ys) for ys in series_data])]
 	)
 
 if __name__ == "__main__":
 
-	# animated_simulation()
-	plotted_simulation()
+	animated_simulation()
+	#plotted_simulation()
